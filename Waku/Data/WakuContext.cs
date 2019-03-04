@@ -8,6 +8,7 @@ namespace Waku.Data
     {
         public WakuContext(DbContextOptions<WakuContext> options) : base(options)
         {
+            Database.EnsureCreated();
         }
 
         public DbSet<BlogPost> BlogPosts { get; set; }

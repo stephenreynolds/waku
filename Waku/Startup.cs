@@ -34,7 +34,9 @@ namespace Waku
             services.AddIdentity<WakuUser, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
-            }).AddEntityFrameworkStores<WakuContext>();
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<WakuContext>();
 
             services.AddAuthentication()
                 .AddCookie()
@@ -42,8 +44,8 @@ namespace Waku
                 {
                     cfg.TokenValidationParameters = new TokenValidationParameters()
                     {
-                        ValidIssuer = Configuration["Token:ValidIssuer"],
-                        ValidAudience = Configuration["Token:ValidAudience"],
+                        ValidIssuer = Configuration["Token:Issuer"],
+                        ValidAudience = Configuration["Token:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
                     };
                 });
@@ -57,6 +59,8 @@ namespace Waku
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddScoped<IWakuRepository, WakuRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

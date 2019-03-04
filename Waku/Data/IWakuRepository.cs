@@ -10,6 +10,6 @@ namespace Waku.Data
 
         IEnumerable<BlogPost> GetAllBlogPosts();
         IEnumerable<BlogPost> GetUserBlogPosts(string username);
-        BlogPost GetBlogPostById(string username, int id);
+        BlogPost GetBlogPostById(int id);
     }
 }

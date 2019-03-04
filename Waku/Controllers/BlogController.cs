@@ -37,8 +37,7 @@ namespace Waku.Controllers
         {
             try
             {
-                var username = User.Identity.Name;
-                var results = repository.GetUserBlogPosts(username);
+                var results = repository.GetAllBlogPosts();
                 return Ok(mapper.Map<IEnumerable<BlogPost>, IEnumerable<BlogPostModel>>(results));
             }
             catch (Exception ex)
@@ -54,7 +53,7 @@ namespace Waku.Controllers
             try
             {
                 var username = User.Identity.Name;
-                var result = repository.GetBlogPostById(username, id);
+                var result = repository.GetBlogPostById(id);
                 return Ok (mapper.Map<BlogPost, BlogPostModel>(result));
             }
             catch (Exception ex)

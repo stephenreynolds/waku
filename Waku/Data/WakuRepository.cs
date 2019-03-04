@@ -38,10 +38,10 @@ namespace Waku.Data
             }
         }
 
-        public BlogPost GetBlogPostById(string username, int id)
+        public BlogPost GetBlogPostById(int id)
         {
             var blogPosts = from p in context.BlogPosts
-                            where p.User.UserName == username && p.Id == id
+                            where p.Id == id
                             select p;
             return blogPosts.FirstOrDefault();
         }
