@@ -1,0 +1,16 @@
+{
+  "ConnectionStrings": {
+    "WakuConnectionString": ""
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning"
+    }
+  },
+  "Tokens": {
+    "Key": "",
+    "Issuer": "",
+    "Audience": "users"
+  }
+}
