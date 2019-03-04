@@ -13639,11 +13639,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Source\\git\\personal\\Waku\\Waku.Test\\Waku.Test.csproj",
+      "projectUniqueName": "e:\\Source\\git\\personal\\Waku\\Waku.Test\\Waku.Test.csproj",
       "projectName": "Waku.Test",
-      "projectPath": "E:\\Source\\git\\personal\\Waku\\Waku.Test\\Waku.Test.csproj",
+      "projectPath": "e:\\Source\\git\\personal\\Waku\\Waku.Test\\Waku.Test.csproj",
       "packagesPath": "C:\\Users\\Stephen Reynolds\\.nuget\\packages\\",
-      "outputPath": "E:\\Source\\git\\personal\\Waku\\Waku.Test\\obj\\",
+      "outputPath": "e:\\Source\\git\\personal\\Waku\\Waku.Test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "c:\\program files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -13662,8 +13662,8 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "E:\\Source\\git\\personal\\Waku\\Waku\\Waku.csproj": {
-              "projectPath": "E:\\Source\\git\\personal\\Waku\\Waku\\Waku.csproj"
+            "e:\\Source\\git\\personal\\Waku\\Waku\\Waku.csproj": {
+              "projectPath": "e:\\Source\\git\\personal\\Waku\\Waku\\Waku.csproj"
             }
           }
         }
