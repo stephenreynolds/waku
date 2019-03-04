@@ -1,0 +1,9 @@
+language: csharp
+mono: none
+dotnet: 2.2
+soluton: Waku.sln
+install:
+ - nuget restore Waku.sln
+ - nuget install xunit.runners -Vresion 1.9.2 -OutputDirectory testrunner
+script:
+ - dotnet restore
