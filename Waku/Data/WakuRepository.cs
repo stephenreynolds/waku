@@ -22,6 +22,16 @@ namespace Waku.Data
             context.Add(model);
         }
 
+        public void UpdateEntity(object model)
+        {
+            context.Update(model);
+        }
+
+        public void RemoveEntity(object model)
+        {
+            context.Remove(model);
+        }
+
         public IEnumerable<BlogPost> GetAllBlogPosts()
         {
             try

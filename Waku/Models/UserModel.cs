@@ -4,6 +4,7 @@ namespace Waku.Models
 {
     public class UserModel
     {
+        public int Id { get; set; }
         [Required]
         public string Username { get; set; }
         [Required]
@@ -12,6 +13,7 @@ namespace Waku.Models
         public string Password { get; set; }
         [Required]
         public string Role { get; set; } = "User";
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }

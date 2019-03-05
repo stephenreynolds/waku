@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,23 +22,24 @@ namespace Waku.Controllers
         private readonly UserManager<WakuUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
         public AccountController(
             ILogger<AccountController> logger,
             SignInManager<WakuUser> signInManager,
             UserManager<WakuUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IConfiguration config)
+            IConfiguration config,
+            IMapper mapper)
         {
             this.logger = logger;
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.config = config;
+            this.mapper = mapper;
 
-            CreateRole("Admin").Wait();
-            CreateRole("Moderator").Wait();
-            CreateRole("User").Wait();
+            EnsureRolesCreated().Wait();
         }
 
         public IActionResult Login()
@@ -130,44 +132,76 @@ namespace Waku.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserModel model)
         {
-            WakuUser user = await userManager.FindByNameAsync(model.Username);
-
-            if (user == null)
+            try
             {
-                user = new WakuUser
+                if (ModelState.IsValid)
                 {
-                    UserName = model.Username,
-                    Email = model.Email,
-                    Role = model.Role
-                };
+                    WakuUser user = await userManager.FindByNameAsync(model.Username);
 
-                var result = await userManager.CreateAsync(user, model.Password);
-                if (result == IdentityResult.Success)
-                {
-                    if (model.Role == "Admin")
+                    if (user == null)
                     {
-                        AddUserToRoleAuthed(user, model.Role);
-                    }
-                    else
-                    {
-                        await userManager.AddToRoleAsync(user, model.Role);
+                        // TODO: salt passwords.
+                        user = mapper.Map<UserModel, WakuUser>(model);
+
+                        var result = await userManager.CreateAsync(user, model.Password);
+                        if (result == IdentityResult.Success)
+                        {
+                            switch (model.Role)
+                            {
+                                case "Admin":
+                                case "Moderator":
+                                    AddUserToRoleMod(user, model.Role);
+                                    break;
+                                case "Author":
+                                    AddUserToRoleAuthor(user, model.Role);
+                                    break;
+                                default:
+                                    await userManager.AddToRoleAsync(user, model.Role);
+                                    break;
+                            }
+
+                            var userModel = mapper.Map<WakuUser, UserModel>(user);
+
+                            return Created($"/account/{userModel.Username}", userModel);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Failed to create user: {result.Errors.ToString()}");
+                        }
                     }
 
-                    return Created("", result);
+                    return BadRequest("User already exists.");
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Failed to create user: {result.Errors.ToString()}");
+                    return BadRequest(ModelState);
                 }
             }
-
-            return BadRequest("User already exists.");
+            catch (Exception ex)
+            {
+                logger.LogError($"Failed to create user: {ex}");
+                return BadRequest($"Failed to create user");
+            }
         }
 
         [Authorize(Roles = "Admin")]
-        private async void AddUserToRoleAuthed(WakuUser user, string role)
+        private async void AddUserToRoleMod(WakuUser user, string role)
         {
             await userManager.AddToRoleAsync(user, role);
+        }
+
+        [Authorize(Roles = "Admin,Moderator")]
+        private async void AddUserToRoleAuthor(WakuUser user, string role)
+        {
+            await userManager.AddToRoleAsync(user, role);
+        }
+
+        private async Task EnsureRolesCreated()
+        {
+            await CreateRole("Admin");
+            await CreateRole("Moderator");
+            await CreateRole("Author");
+            await CreateRole("User");
         }
 
         private async Task CreateRole(string roleName)

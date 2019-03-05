@@ -8,6 +8,10 @@ namespace Waku.Data
     {
         public WakuMappingProfile()
         {
+            CreateMap<WakuUser, UserModel>()
+                .ForMember(u => u.Id, ex => ex.MapFrom(u => u.Id))
+                .ReverseMap();
+
             CreateMap<BlogPost, BlogPostModel>()
                 .ForMember(p => p.Id, ex => ex.MapFrom(p => p.Id))
                 .ReverseMap();

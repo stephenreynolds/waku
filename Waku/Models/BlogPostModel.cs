@@ -14,13 +14,10 @@ namespace Waku.Models
         [Required]
         public string Content { get; set; }
 
-        [Required]
-        public DateTime PublishDate { get; set; } = DateTime.UtcNow;
+        public DateTime PublishDate { get; set; }
 
-        [Required]
-        public DateTime EditDate { get; set; } = DateTime.UtcNow;
+        public DateTime EditDate { get; set; }
 
-        [Required]
         public WakuUser User { get; set; }
     }
 }

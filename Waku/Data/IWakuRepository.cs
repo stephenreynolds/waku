@@ -7,6 +7,8 @@ namespace Waku.Data
     {
         bool SaveAll();
         void AddEntity(object model);
+        void UpdateEntity(object model);
+        void RemoveEntity(object model);
 
         IEnumerable<BlogPost> GetAllBlogPosts();
         IEnumerable<BlogPost> GetUserBlogPosts(string username);

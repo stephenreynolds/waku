@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -47,19 +50,153 @@ namespace Waku.Controllers
             }
         }
 
-        [HttpGet("id:int")]
+        [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
             try
             {
                 var username = User.Identity.Name;
                 var result = repository.GetBlogPostById(id);
-                return Ok (mapper.Map<BlogPost, BlogPostModel>(result));
+                return Ok(mapper.Map<BlogPost, BlogPostModel>(result));
             }
             catch (Exception ex)
             {
                 logger.LogError($"Failed to get blog post: {ex}");
                 return BadRequest("Failed to get blog post.");
+            }
+        }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
+        public async Task<IActionResult> CreatePost([FromBody] BlogPostModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var newPost = mapper.Map<BlogPostModel, BlogPost>(model);
+                    newPost.User = await userManager.FindByNameAsync(User.Identity.Name);
+                    newPost.PublishDate = DateTime.UtcNow;
+                    newPost.EditDate = DateTime.MinValue;
+
+                    repository.AddEntity(newPost);
+                    if (repository.SaveAll())
+                    {
+                        var postModel = mapper.Map<BlogPost, BlogPostModel>(newPost);
+                        return Created($"/api/blog/{postModel.Id}", postModel);
+                    }
+                    else
+                    {
+                        return BadRequest(ModelState);
+                    }
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Failed to create post: {ex}");
+                return BadRequest("Failed to create post");
+            }
+        }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
+        public async Task<IActionResult> EditPost([FromBody] BlogPostModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var post = repository.GetBlogPostById(model.Id);
+
+                    if (post != null)
+                    {
+                        // Make sure user is the correct author (unless admin or mod).
+                        var user = await userManager.FindByNameAsync(User.Identity.Name);
+                        if (user.Role == "Author" && user.Id != post.User.Id)
+                        {
+                            return Unauthorized("You do not have permission to edit this post.");
+                        }
+
+                        DateTime publishDate = post.PublishDate; // Make sure publish date is not changed.
+                        post = mapper.Map<BlogPostModel, BlogPost>(model);
+                        post.PublishDate = publishDate;
+                        post.EditDate = DateTime.UtcNow;
+
+                        repository.UpdateEntity(post);
+                        if (repository.SaveAll())
+                        {
+                            var postModel = mapper.Map<BlogPost, BlogPostModel>(post);
+                            return Ok(postModel);
+                        }
+                        else
+                        {
+                            return BadRequest(ModelState);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("The post does not exist.");
+                    }
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Failed to edit post: {ex}");
+                return BadRequest("Failed to edit post");
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var post = repository.GetBlogPostById(id);
+
+                    if (post != null)
+                    {
+                        // Make sure user is the correct author (unless admin or mod).
+                        var user = await userManager.FindByNameAsync(User.Identity.Name);
+                        if (user.Role == "Author" && user.Id != post.User.Id)
+                        {
+                            return Unauthorized("You do not have permission to delete this post.");
+                        }
+
+                        repository.RemoveEntity(post);
+                        if (repository.SaveAll())
+                        {
+                            return Ok("Post deleted successfully.");
+                        }
+                        else
+                        {
+                            return BadRequest(ModelState);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("The post does not exist.");
+                    }
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Failed to delete post: {ex}");
+                return BadRequest("Failed to delete post");
             }
         }
     }
