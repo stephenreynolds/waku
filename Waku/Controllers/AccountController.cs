@@ -36,6 +36,7 @@ namespace Waku.Controllers
             this.config = config;
 
             CreateRole("Admin").Wait();
+            CreateRole("Moderator").Wait();
             CreateRole("User").Wait();
         }
 
