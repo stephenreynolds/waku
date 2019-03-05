@@ -19,18 +19,24 @@ namespace Waku.Controllers
         private readonly ILogger<AccountController> logger;
         private readonly SignInManager<WakuUser> signInManager;
         private readonly UserManager<WakuUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration config;
 
         public AccountController(
             ILogger<AccountController> logger,
             SignInManager<WakuUser> signInManager,
             UserManager<WakuUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             IConfiguration config)
         {
             this.logger = logger;
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.roleManager = roleManager;
             this.config = config;
+
+            CreateRole("Admin").Wait();
+            CreateRole("User").Wait();
         }
 
         public IActionResult Login()
@@ -130,7 +136,8 @@ namespace Waku.Controllers
                 user = new WakuUser
                 {
                     UserName = model.Username,
-                    Email = model.Email
+                    Email = model.Email,
+                    Role = model.Role
                 };
 
                 var result = await userManager.CreateAsync(user, model.Password);
@@ -144,20 +151,32 @@ namespace Waku.Controllers
                     {
                         await userManager.AddToRoleAsync(user, model.Role);
                     }
+
+                    return Created("", result);
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Failed to create new user: {result.Errors.ToString()}");
+                    throw new InvalidOperationException($"Failed to create user: {result.Errors.ToString()}");
                 }
             }
 
-            return BadRequest("Failed to create user.");
+            return BadRequest("User already exists.");
         }
 
         [Authorize(Roles = "Admin")]
         private async void AddUserToRoleAuthed(WakuUser user, string role)
         {
             await userManager.AddToRoleAsync(user, role);
+        }
+
+        private async Task CreateRole(string roleName)
+        {
+            if (!(await roleManager.RoleExistsAsync(roleName)))
+            {
+                var role = new IdentityRole();
+                role.Name = roleName;
+                await roleManager.CreateAsync(role);
+            }
         }
     }
 }
