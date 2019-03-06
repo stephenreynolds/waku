@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Waku.Data.Entities;
 
 namespace Waku.Data
@@ -6,10 +7,10 @@ namespace Waku.Data
     public interface IWakuRepository
     {
         bool SaveAll();
-        void AddEntity(object model);
-        void UpdateEntity(object model);
-        void RemoveEntity(object model);
+        EntityEntry AddEntity(object model);
+        EntityEntry RemoveEntity(object model);
 
+        EntityEntry UpdateBlogPost(BlogPost model);
         IEnumerable<BlogPost> GetAllBlogPosts();
         IEnumerable<BlogPost> GetUserBlogPosts(string username);
         BlogPost GetBlogPostById(int id);

@@ -6,18 +6,15 @@ namespace Waku.Models
 {
     public class BlogPostModel
     {
-        public int Id { get; set; }
+        public int Id { get; }
+        public WakuUser User { get; }
+        public DateTime PublishDate { get; }
+        public DateTime EditDate { get; }
 
         [Required]
         public string Title { get; set; }
 
         [Required]
         public string Content { get; set; }
-
-        public DateTime PublishDate { get; set; }
-
-        public DateTime EditDate { get; set; }
-
-        public WakuUser User { get; set; }
     }
 }

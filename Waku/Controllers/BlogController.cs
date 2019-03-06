@@ -13,9 +13,10 @@ using Waku.Models;
 
 namespace Waku.Controllers
 {
-    [Route("api/[Controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
     public class BlogController : Controller
     {
         private readonly IWakuRepository repository;
@@ -36,6 +37,7 @@ namespace Waku.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Get()
         {
             try
@@ -51,6 +53,7 @@ namespace Waku.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public IActionResult Get(int id)
         {
             try
@@ -66,8 +69,7 @@ namespace Waku.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
+        [HttpPost("createpost")]
         public async Task<IActionResult> CreatePost([FromBody] BlogPostModel model)
         {
             try
@@ -102,8 +104,7 @@ namespace Waku.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
+        [HttpPost("editpost")]
         public async Task<IActionResult> EditPost([FromBody] BlogPostModel model)
         {
             try
@@ -116,7 +117,7 @@ namespace Waku.Controllers
                     {
                         // Make sure user is the correct author (unless admin or mod).
                         var user = await userManager.FindByNameAsync(User.Identity.Name);
-                        if (user.Role == "Author" && user.Id != post.User.Id)
+                        if (await userManager.IsInRoleAsync(user, "Author") && user.Id != post.User.Id)
                         {
                             return Unauthorized("You do not have permission to edit this post.");
                         }
@@ -126,7 +127,7 @@ namespace Waku.Controllers
                         post.PublishDate = publishDate;
                         post.EditDate = DateTime.UtcNow;
 
-                        repository.UpdateEntity(post);
+                        repository.UpdateBlogPost(post);
                         if (repository.SaveAll())
                         {
                             var postModel = mapper.Map<BlogPost, BlogPostModel>(post);
@@ -155,42 +156,34 @@ namespace Waku.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
-        public async Task<IActionResult> DeletePost(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                if (ModelState.IsValid)
+                var post = repository.GetBlogPostById(id);
+
+                if (post != null)
                 {
-                    var post = repository.GetBlogPostById(id);
-
-                    if (post != null)
+                    // Make sure user is the correct author (unless admin or mod).
+                    var user = await userManager.FindByNameAsync(User.Identity.Name);
+                    if (await userManager.IsInRoleAsync(user, "Author") && user.Id != post.User.Id)
                     {
-                        // Make sure user is the correct author (unless admin or mod).
-                        var user = await userManager.FindByNameAsync(User.Identity.Name);
-                        if (user.Role == "Author" && user.Id != post.User.Id)
-                        {
-                            return Unauthorized("You do not have permission to delete this post.");
-                        }
+                        return Unauthorized("You do not have permission to delete this post.");
+                    }
 
-                        repository.RemoveEntity(post);
-                        if (repository.SaveAll())
-                        {
-                            return Ok("Post deleted successfully.");
-                        }
-                        else
-                        {
-                            return BadRequest(ModelState);
-                        }
+                    repository.RemoveEntity(post);
+                    if (repository.SaveAll())
+                    {
+                        return Ok("Post deleted successfully.");
                     }
                     else
                     {
-                        throw new InvalidOperationException("The post does not exist.");
+                        return BadRequest();
                     }
                 }
                 else
                 {
-                    return BadRequest(ModelState);
+                    return NotFound();
                 }
             }
             catch (Exception ex)

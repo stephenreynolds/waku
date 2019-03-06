@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Waku.Data;
 using Waku.Data.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Waku
 {
@@ -34,6 +35,7 @@ namespace Waku
             services.AddIdentity<WakuUser, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
+                // TODO: require confirmed email.
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<WakuContext>();
@@ -44,8 +46,8 @@ namespace Waku
                 {
                     cfg.TokenValidationParameters = new TokenValidationParameters()
                     {
-                        ValidIssuer = Configuration["Token:Issuer"],
-                        ValidAudience = Configuration["Token:Audience"],
+                        ValidIssuer = Configuration["Tokens:Issuer"],
+                        ValidAudience = Configuration["Tokens:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
                     };
                 });
