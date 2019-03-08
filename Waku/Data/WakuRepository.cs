@@ -29,6 +29,11 @@ namespace Waku.Data
             return context.Remove(model);
         }
 
+        public bool SaveAll()
+        {
+            return context.SaveChanges() > 0;
+        }
+
         public EntityEntry UpdateBlogPost(BlogPost model)
         {
             var local = context.Set<BlogPost>().Local.FirstOrDefault(entry => entry.Id.Equals(model.Id));
@@ -68,11 +73,6 @@ namespace Waku.Data
         public IEnumerable<BlogPost> GetUserBlogPosts(string username)
         {
             return context.BlogPosts.Where(p => p.User.UserName == username);
-        }
-
-        public bool SaveAll()
-        {
-            return context.SaveChanges() > 0;
         }
     }
 }

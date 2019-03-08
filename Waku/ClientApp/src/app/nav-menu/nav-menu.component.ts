@@ -1,18 +1,22 @@
 import { Component } from '@angular/core';
+import { UserService } from '../shared/user.service';
 
 @Component({
   selector: 'app-nav-menu',
   templateUrl: './nav-menu.component.html',
-  styleUrls: ['./nav-menu.component.css']
+  styleUrls: ['./nav-menu.component.scss']
 })
 export class NavMenuComponent {
-  isExpanded = false;
+  public isExpanded = false;
+  public showDropdown = false;
 
-  collapse() {
+  constructor(public user: UserService) {}
+
+  public collapse() {
     this.isExpanded = false;
   }
 
-  toggle() {
+  public toggle() {
     this.isExpanded = !this.isExpanded;
   }
 }

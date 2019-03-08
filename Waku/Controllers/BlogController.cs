@@ -69,7 +69,7 @@ namespace Waku.Controllers
             }
         }
 
-        [HttpPost("createpost")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> CreatePost([FromBody] BlogPostModel model)
         {
             try
@@ -104,7 +104,7 @@ namespace Waku.Controllers
             }
         }
 
-        [HttpPost("editpost")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> EditPost([FromBody] BlogPostModel model)
         {
             try

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,9 @@ using Waku.Models;
 
 namespace Waku.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [Produces("application/json")]
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> logger;
@@ -43,33 +47,23 @@ namespace Waku.Controllers
             EnsureRolesCreated().Wait();
         }
 
-        public IActionResult Login()
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "App");
-            }
-
-            return View();
-        }
-
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> Login(LoginModel model)
         {
             if (ModelState.IsValid)
             {
                 var result = await signInManager.PasswordSignInAsync(
-                    model.Username, model.Password, model.RememberMe, lockoutOnFailure : false);
+                    model.Username, model.Password, model.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
                 {
                     if (Request.Query.Keys.Contains("ReturnUrl"))
                     {
-                        return Redirect(Request.Query["ReturnUrl"]);
+                        return Redirect(Request.Query["ReturnUrl"].First());
                     }
                     else
                     {
-                        return RedirectToAction("Index", "App");
+                        return Redirect("/");
                     }
                 }
             }
@@ -83,10 +77,10 @@ namespace Waku.Controllers
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "App");
+            return Redirect("/");
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> CreateToken([FromBody] LoginModel model)
         {
             if (ModelState.IsValid)

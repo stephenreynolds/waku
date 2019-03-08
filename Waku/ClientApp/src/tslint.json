@@ -12,6 +12,18 @@
             "element",
             "app",
             "kebab-case"
-        ]
+        ],
+        "member-ordering": [
+          true,
+          {
+            "alphabetize": true,
+            "order": "fields-first"
+          }
+        ],
+        "member-access": [
+          true,
+          "check-accessor"
+        ],
+        "no-inferrable-types": false
     }
 }
