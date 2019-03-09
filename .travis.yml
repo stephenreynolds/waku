@@ -14,7 +14,7 @@ script:
   - dotnet build
   - dotnet test
   - cd Waku/ClientApp
-  - npm install
+  - npm install -g @angular/cli
   - ng lint
   - ng build --prod
 env:
