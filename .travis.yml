@@ -3,29 +3,21 @@ branches:
     - master
     - dev
 
-deploy:
-  language: csharp
-  sudo: required
-  mono: none
-  dist: xenial
-  dotnet: 2.2
-  soluton: Waku.sln
-  script:
-    - dotnet restore
-    - dotnet build
-    - dotnet test
-  env:
-    global:
-      - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
-      - DOTNET_CLI_TELEMETRY_OPTOUT=1
-
-deploy:
-  language: node_js
-  sudo: required
-  dist: xenial
-  before_script:
-    - cd Waku/ClientApp
-    - npm install
-  script:
-    - ng lint
-    - ng build --prod
+language: csharp
+sudo: required
+mono: none
+dist: xenial
+dotnet: 2.2
+soluton: Waku.sln
+script:
+  - dotnet restore
+  - dotnet build
+  - dotnet test
+  - cd Waku/ClientApp
+  - npm install
+  - ng lint
+  - ng build --prod
+env:
+  global:
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
+    - DOTNET_CLI_TELEMETRY_OPTOUT=1
