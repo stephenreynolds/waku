@@ -54,7 +54,7 @@ namespace Waku.Data
             try
             {
                 var blogPosts = from p in context.BlogPosts
-                                orderby p.EditDate descending
+                                orderby p.PublishDate descending
                                 select p;
                 return blogPosts.ToList();
             }
@@ -65,14 +65,23 @@ namespace Waku.Data
             }
         }
 
+        public IEnumerable<BlogPost> GetBlogPostsInRange(int start, int end)
+        {
+            try
+            {
+                var blogPosts = context.BlogPosts.ToList().GetRange(start, end).OrderByDescending(p => p.PublishDate);
+                return blogPosts;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Failed to get blog posts in range ({start}-{end}): {ex}");
+                return null;
+            }
+        }
+
         public BlogPost GetBlogPostById(int id)
         {
             return context.BlogPosts.FirstOrDefault(p => p.Id == id);
-        }
-
-        public IEnumerable<BlogPost> GetUserBlogPosts(string username)
-        {
-            return context.BlogPosts.Where(p => p.User.UserName == username);
         }
     }
 }

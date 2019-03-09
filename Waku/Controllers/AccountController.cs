@@ -23,61 +23,25 @@ namespace Waku.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> logger;
-        private readonly SignInManager<WakuUser> signInManager;
-        private readonly UserManager<WakuUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration config;
         private readonly IMapper mapper;
 
         public AccountController(
             ILogger<AccountController> logger,
-            SignInManager<WakuUser> signInManager,
-            UserManager<WakuUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager,
             IConfiguration config,
             IMapper mapper)
         {
             this.logger = logger;
             this.signInManager = signInManager;
             this.userManager = userManager;
-            this.roleManager = roleManager;
             this.config = config;
             this.mapper = mapper;
 
-            EnsureRolesCreated().Wait();
-        }
-
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Login(LoginModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await signInManager.PasswordSignInAsync(
-                    model.Username, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    if (Request.Query.Keys.Contains("ReturnUrl"))
-                    {
-                        return Redirect(Request.Query["ReturnUrl"].First());
-                    }
-                    else
-                    {
-                        return Redirect("/");
-                    }
-                }
-            }
-
-            ModelState.AddModelError("", "Failed to login");
-
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await signInManager.SignOutAsync();
-            return Redirect("/");
+            EnsureCreated();
         }
 
         [HttpPost("[action]")]
@@ -89,7 +53,7 @@ namespace Waku.Controllers
 
                 if (user != null)
                 {
-                    var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure : false);
+                    var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
 
                     if (result.Succeeded)
                     {
@@ -99,23 +63,6 @@ namespace Waku.Controllers
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                             new Claim(ClaimTypes.Name, user.UserName)
                         };
-
-                        var userClaims = await userManager.GetClaimsAsync(user);
-                        var userRoles = await userManager.GetRolesAsync(user);
-                        claims.AddRange(userClaims);
-                        foreach (var userRole in userRoles)
-                        {
-                            claims.Add(new Claim(ClaimTypes.Role, userRole));
-                            var role = await roleManager.FindByNameAsync(userRole);
-                            if (role != null)
-                            {
-                                var roleClaims = await roleManager.GetClaimsAsync(role);
-                                foreach (Claim roleClaim in roleClaims)
-                                {
-                                    claims.Add(roleClaim);
-                                }
-                            }
-                        }
 
                         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Tokens:Key"]));
                         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -149,33 +96,18 @@ namespace Waku.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    WakuUser user = await userManager.FindByNameAsync(model.Username);
+                    IdentityUser user = await userManager.FindByNameAsync(model.Username);
 
                     if (user == null)
                     {
-                        user = mapper.Map<UserModel, WakuUser>(model);
+                        user = mapper.Map<UserModel, IdentityUser>(model);
 
                         var result = await userManager.CreateAsync(user, model.Password);
                         if (result == IdentityResult.Success)
                         {
-                            switch (model.Role)
-                            {
-                                case "Admin":
-                                case "Moderator":
-                                    AddUserToRoleMod(user, model.Role);
-                                    break;
-                                case "Author":
-                                    AddUserToRoleAuthor(user, model.Role);
-                                    break;
-                                default:
-                                    await userManager.AddToRoleAsync(user, model.Role);
-                                    break;
-                            }
+                            var userModel = mapper.Map<IdentityUser, UserModel>(user);
 
-                            var userModel = mapper.Map<WakuUser, UserModel>(user);
-                            userModel.Role = model.Role;
-
-                            return Created($"/account/{userModel.Username}", userModel);
+                            return Created($"/api/account/{userModel.Username}", userModel);
                         }
                         else
                         {
@@ -198,7 +130,7 @@ namespace Waku.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> RemoveUser(int id)
         {
             try
@@ -222,34 +154,20 @@ namespace Waku.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
-        private async void AddUserToRoleMod(WakuUser user, string role)
+        private void EnsureCreated()
         {
-            await userManager.AddToRoleAsync(user, role);
-        }
+            string username = config["Defaults:User:Username"];
+            string password = config["Defaults:User:Password"];
 
-        [Authorize(Roles = "Admin,Moderator")]
-        private async void AddUserToRoleAuthor(WakuUser user, string role)
-        {
-            await userManager.AddToRoleAsync(user, role);
-        }
+            logger.LogInformation($"Username: {username}, Password: {password}");
 
-        private async Task EnsureRolesCreated()
-        {
-            await CreateRole("Admin");
-            await CreateRole("Moderator");
-            await CreateRole("Author");
-            await CreateRole("User");
-        }
-
-        private async Task CreateRole(string roleName)
-        {
-            if (!(await roleManager.RoleExistsAsync(roleName)))
+            UserModel userModel = new UserModel
             {
-                var role = new IdentityRole();
-                role.Name = roleName;
-                await roleManager.CreateAsync(role);
-            }
+                Username = username,
+                Password = password
+            };
+
+            CreateUser(userModel).Wait();
         }
     }
 }

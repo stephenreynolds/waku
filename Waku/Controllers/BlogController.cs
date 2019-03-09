@@ -16,24 +16,21 @@ namespace Waku.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Moderator,Author")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class BlogController : Controller
     {
         private readonly IWakuRepository repository;
         private readonly IMapper mapper;
         private readonly ILogger<BlogController> logger;
-        private readonly UserManager<WakuUser> userManager;
 
         public BlogController(
             IWakuRepository repository,
             IMapper mapper,
-            ILogger<BlogController> logger,
-            UserManager<WakuUser> userManager)
+            ILogger<BlogController> logger)
         {
             this.repository = repository;
             this.mapper = mapper;
             this.logger = logger;
-            this.userManager = userManager;
         }
 
         [HttpGet]
@@ -52,13 +49,12 @@ namespace Waku.Controllers
             }
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public IActionResult Get(int id)
         {
             try
             {
-                var username = User.Identity.Name;
                 var result = repository.GetBlogPostById(id);
                 return Ok(mapper.Map<BlogPost, BlogPostModel>(result));
             }
@@ -69,15 +65,29 @@ namespace Waku.Controllers
             }
         }
 
+        [HttpGet("{start}/{end}")]
+        public IActionResult Get(int start, int end)
+        {
+            try
+            {
+                var result = repository.GetBlogPostsInRange(start, end);
+                return Ok(mapper.Map<IEnumerable<BlogPost>, IEnumerable<BlogPostModel>>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Failed to get blog posts in range ({start}-{end}): {ex}");
+                return BadRequest($"Faield to get blog posts in range ({start}-{end}");
+            }
+        }
+
         [HttpPost("[action]")]
-        public async Task<IActionResult> CreatePost([FromBody] BlogPostModel model)
+        public IActionResult CreatePost([FromBody] BlogPostModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     var newPost = mapper.Map<BlogPostModel, BlogPost>(model);
-                    newPost.User = await userManager.FindByNameAsync(User.Identity.Name);
                     newPost.PublishDate = DateTime.UtcNow;
                     newPost.EditDate = DateTime.MinValue;
 
@@ -105,7 +115,7 @@ namespace Waku.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> EditPost([FromBody] BlogPostModel model)
+        public IActionResult EditPost([FromBody] BlogPostModel model)
         {
             try
             {
@@ -115,13 +125,6 @@ namespace Waku.Controllers
 
                     if (post != null)
                     {
-                        // Make sure user is the correct author (unless admin or mod).
-                        var user = await userManager.FindByNameAsync(User.Identity.Name);
-                        if (await userManager.IsInRoleAsync(user, "Author") && user.Id != post.User.Id)
-                        {
-                            return Unauthorized("You do not have permission to edit this post.");
-                        }
-
                         DateTime publishDate = post.PublishDate; // Make sure publish date is not changed.
                         post = mapper.Map<BlogPostModel, BlogPost>(model);
                         post.PublishDate = publishDate;
@@ -156,7 +159,7 @@ namespace Waku.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
             try
             {
@@ -164,13 +167,6 @@ namespace Waku.Controllers
 
                 if (post != null)
                 {
-                    // Make sure user is the correct author (unless admin or mod).
-                    var user = await userManager.FindByNameAsync(User.Identity.Name);
-                    if (await userManager.IsInRoleAsync(user, "Author") && user.Id != post.User.Id)
-                    {
-                        return Unauthorized("You do not have permission to delete this post.");
-                    }
-
                     repository.RemoveEntity(post);
                     if (repository.SaveAll())
                     {

@@ -32,12 +32,10 @@ namespace Waku
                 cfg.UseSqlServer(Configuration.GetConnectionString("WakuConnectionString"));
             });
 
-            services.AddIdentity<WakuUser, IdentityRole>(cfg =>
+            services.AddIdentity<IdentityUser, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
-                // TODO: require confirmed email.
             })
-            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<WakuContext>();
 
             services.AddAuthentication()

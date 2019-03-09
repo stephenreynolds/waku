@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Waku.Data.Entities;
 using Waku.Models;
 
@@ -8,7 +9,7 @@ namespace Waku.Data
     {
         public WakuMappingProfile()
         {
-            CreateMap<WakuUser, UserModel>()
+            CreateMap<IdentityUser, UserModel>()
                 .ForMember(u => u.Id, ex => ex.MapFrom(u => u.Id))
                 .ReverseMap();
 

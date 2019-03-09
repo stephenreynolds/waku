@@ -1,0 +1,20 @@
+<table>
+  <tr *ngFor="let post of posts">
+  </tr>
+</table>
+
+<div class="row">
+  <div class="blogPosts col-md-4 well well-sm" *ngFor="let p of posts">
+    <div class="card bg-light p-1 m-1">
+      <div><strong>{{p.title}}</strong></div>
+      <div>{{p.publishDate}}</div>
+    </div>
+  </div>
+</div>
+
+<ngb-pagination [collectionSize]="totalItems"
+                [(page)]="page"
+                [maxSize]="7"
+                [boundaryLinks]="true"
+                (pageChange)="loadPage($event)">
+</ngb-pagination>

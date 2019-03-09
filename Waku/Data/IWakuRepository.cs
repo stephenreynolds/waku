@@ -12,7 +12,7 @@ namespace Waku.Data
 
         EntityEntry UpdateBlogPost(BlogPost model);
         IEnumerable<BlogPost> GetAllBlogPosts();
-        IEnumerable<BlogPost> GetUserBlogPosts(string username);
+        IEnumerable<BlogPost> GetBlogPostsInRange(int start, int end);
         BlogPost GetBlogPostById(int id);
     }
 }

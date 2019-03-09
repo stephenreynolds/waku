@@ -7,8 +7,9 @@ namespace Waku.Models
     public class BlogPostModel
     {
         public int Id { get; }
-        public WakuUser User { get; }
+
         public DateTime PublishDate { get; }
+
         public DateTime EditDate { get; }
 
         [Required]
