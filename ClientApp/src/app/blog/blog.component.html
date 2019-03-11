@@ -1,0 +1,27 @@
+<table>
+  <tr *ngFor="let post of posts">
+  </tr>
+</table>
+
+<div class="row">
+  <div class="blog-posts col-md-4" *ngFor="let p of posts">
+    <a routerLink="">
+      <div class="card card-body bg-light p-0">
+      <div><img class="post-thumbnail mx-auto" *ngIf="p.image" [src]="p.image"></div>
+      <div class="bg-dark text-light p-1 rounded-bottom font-open-sans">
+        <div class="text-center"><strong>{{p.title}}</strong></div>
+        <div class="text-center">Published on {{p.publishDate + "Z" | date:"yyyy-MM-dd h:mm a"}}</div>
+      </div>
+    </div>
+    </a>
+  </div>
+</div>
+
+<div class="pagination mt-4">
+  <ngb-pagination [collectionSize]="totalItems"
+                  [(page)]="page"
+                  [maxSize]="itemsPerPage"
+                  [boundaryLinks]="true"
+                  (pageChange)="loadPage($event)">
+  </ngb-pagination>
+</div>

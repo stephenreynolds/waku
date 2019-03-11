@@ -1,0 +1,16 @@
+img.post-thumbnail {
+  max-width: 50%;
+  display: block;
+}
+
+.blog-posts {
+  a {
+    text-decoration: none;
+  }
+}
+
+.pagination {
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+}
