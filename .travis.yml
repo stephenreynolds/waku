@@ -13,7 +13,7 @@ script:
   - dotnet restore
   - dotnet build
   - dotnet test
-  - cd Waku/ClientApp
+  - cd ClientApp
   - npm install -g @angular/cli
   - ng lint
   - ng build --prod
