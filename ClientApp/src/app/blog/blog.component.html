@@ -1,7 +1,8 @@
-<table>
-  <tr *ngFor="let post of posts">
-  </tr>
-</table>
+<div class="container" *ngIf="!userService.loginRequired">
+  <a class="btn bg-secondary text-light float-right" [routerLink]='["/blog/createpost"]'>
+    <i class="fa fa-plus"></i> New post
+  </a>
+</div>
 
 <div class="row">
   <div class="blog-posts col-md-4" *ngFor="let p of posts">

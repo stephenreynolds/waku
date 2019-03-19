@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BlogPost } from '../shared/blogPost';
 import { BlogService } from '../shared/blog.service';
+import { UserService } from '../shared/user.service';
 
 @Component({
   selector: 'app-blog',
@@ -15,7 +16,7 @@ export class BlogComponent implements OnInit {
   public previousPage: any;
   public totalItems: any;
 
-  constructor(private blogService: BlogService) {}
+  constructor(private blogService: BlogService, private userService: UserService) {}
 
   public loadPage(page: number) {
     if (page !== this.previousPage) {

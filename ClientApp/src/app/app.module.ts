@@ -13,6 +13,7 @@ import { LoginComponent } from './login/login.component';
 import { UserService } from './shared/user.service';
 import { BlogComponent } from './blog/blog.component';
 import { BlogService } from './shared/blog.service';
+import { CreatePostComponent } from './blog/createpost.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { BlogService } from './shared/blog.service';
     NavMenuComponent,
     HomeComponent,
     LoginComponent,
-    BlogComponent
+    BlogComponent,
+    CreatePostComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -30,7 +32,8 @@ import { BlogService } from './shared/blog.service';
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'login', component: LoginComponent },
-      { path: 'blog', component: BlogComponent }
+      { path: 'blog', component: BlogComponent },
+      { path: 'blog/createpost', component: CreatePostComponent }
     ])
   ],
   providers: [
