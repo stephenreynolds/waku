@@ -11,6 +11,19 @@ export class CreatePostComponent {
 
   }
 
+  private onFileChange(event) {
+    const reader = new FileReader();
+
+    if (event.target.files && event.target.files.length) {
+      const [file] = event.target.files;
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        // See https://medium.com/@amcdnl/file-uploads-with-angular-reactive-forms-960fd0b34cb5
+      };
+    }
+  }
+
   private onSubmit() {
 
   }
