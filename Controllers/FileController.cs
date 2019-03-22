@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Waku
+namespace Waku.Controllers
 {
     [ApiController]
     [Produces("application/json")]
