@@ -15,6 +15,8 @@ import { BlogComponent } from './blog/blog.component';
 import { BlogService } from './shared/blog.service';
 import { CreatePostComponent } from './blog/create-post/createpost.component';
 import { FileService } from './shared/file.service';
+import { PostComponent } from './blog/post/post.component';
+import { NotFoundComponent } from './error/notfound/notfound.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { FileService } from './shared/file.service';
     HomeComponent,
     LoginComponent,
     BlogComponent,
-    CreatePostComponent
+    CreatePostComponent,
+    PostComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -34,7 +38,9 @@ import { FileService } from './shared/file.service';
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'login', component: LoginComponent },
       { path: 'blog', component: BlogComponent },
-      { path: 'blog/createpost', component: CreatePostComponent }
+      { path: 'blog/createpost', component: CreatePostComponent },
+      { path: 'blog/post/:id', component: PostComponent },
+      { path: '**', component: NotFoundComponent }
     ])
   ],
   providers: [
