@@ -1,5 +1,5 @@
-import { Injectable, Inject } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -40,5 +40,9 @@ export class UserService {
     localStorage.removeItem('jwt');
     localStorage.removeItem('jwtexp');
     this.router.navigate(['']);
+  }
+
+  public getToken() {
+    return localStorage.getItem('jwt');
   }
 }

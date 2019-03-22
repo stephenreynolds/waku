@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Waku/bin/Debug/netcoreapp2.2/Waku.dll",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/Waku.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Waku",
+            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "logging": {

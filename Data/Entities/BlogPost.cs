@@ -18,6 +18,8 @@ namespace Waku.Data.Entities
 
         public DateTime EditDate { get; set; }
 
-        public string Image { get; set; }
+        public string SubTitle { get; set; }
+
+        public string Thumbnail { get; set; }
     }
 }

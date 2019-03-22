@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Waku/Waku.csproj"
+                "${workspaceFolder}/Waku.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

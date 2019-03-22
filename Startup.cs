@@ -12,6 +12,8 @@ using Waku.Data;
 using Waku.Data.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace Waku
 {

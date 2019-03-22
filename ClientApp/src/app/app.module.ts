@@ -13,7 +13,8 @@ import { LoginComponent } from './login/login.component';
 import { UserService } from './shared/user.service';
 import { BlogComponent } from './blog/blog.component';
 import { BlogService } from './shared/blog.service';
-import { CreatePostComponent } from './blog/createpost.component';
+import { CreatePostComponent } from './blog/create-post/createpost.component';
+import { FileService } from './shared/file.service';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { CreatePostComponent } from './blog/createpost.component';
   ],
   providers: [
     BlogService,
+    FileService,
     UserService
   ],
   bootstrap: [AppComponent]

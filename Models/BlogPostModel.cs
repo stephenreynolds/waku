@@ -14,10 +14,12 @@ namespace Waku.Models
         [Required]
         public string Content { get; set; }
 
+        public string SubTitle { get; set; }
+
         public DateTime PublishDate { get; set; }
 
         public DateTime EditDate { get; set; }
 
-        public string Image { get; set; }
+        public string Thumbnail { get; set; }
     }
 }

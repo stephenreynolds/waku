@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BlogPost } from './blogPost';
+import { UserService } from './user.service';
 
 @Injectable()
 export class BlogService {
@@ -10,7 +11,7 @@ export class BlogService {
   public count: number;
   public posts: BlogPost[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private userService: UserService) {}
 
   public getCount(): Observable<boolean> {
     return this.http.get('api/blog/count').pipe(
@@ -28,5 +29,11 @@ export class BlogService {
         return true;
       })
     );
+  }
+
+  public createPost(model: { title: string; subtitle: string; thumbnail: string; content: string; }) {
+    return this.http.post('api/blog/createpost', model, {
+      headers: new HttpHeaders().set('Authorization', `Bearer ${this.userService.getToken()}`)
+    });
   }
 }
