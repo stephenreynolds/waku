@@ -28,15 +28,19 @@ You can then use `dotnet run` from the root of the project to build and run the 
   - [ ] File browser
 - [ ] Blogging
   - [x] Basic post creation
-  - [ ] Make posts viewable
+  - [x] Make posts viewable
   - [ ] WYSIWYG content (markdown)
   - [ ] Post editing and deletion
+  - [ ] Tagging
 - [ ] Projects
   - [ ] Project creation
   - [ ] GitHub integration
 - [ ] Resume
   - [ ] Ability to edit resume
-- [ ] Commenting (likely using Disqus)
+- [x] Commenting (likely using Disqus)
 - [ ] Search
+  - [ ] By tag
+  - [ ] By keyword
+  - [ ] By date
 - [ ] Social network integration
 - [ ] Theme support

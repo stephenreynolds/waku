@@ -1,0 +1,24 @@
+<header class="mb-4 text-center">
+  <div class="container clearfix mb-3 p-0" *ngIf="!userService.loginRequired">
+    <a class="btn bg-secondary text-light float-right" routerLink="/blog/edit/{{post.id}}">
+      <i class="fa fa-plus"></i> Edit post
+    </a>
+  </div>
+  <h1>{{post.title}}</h1>
+  <h2>{{post.subtitle}}</h2>
+  <div class="dates text-right">
+    <span class="publish-date d-block">
+      Published on {{post.publishDate + "Z" | date:"yyyy-MM-dd h:mm a"}}
+    </span>
+    <span class="edit-date d-block" *ngIf="post.editDate.toString() !== '0001-01-01T00:00:00'">
+      Edited on {{post.editDate + "Z" | date:"yyyy-MM-dd h:mm a"}}
+    </span>
+  </div>
+</header>
+
+<article class="font-post">
+  {{post.content}}
+</article>
+
+<hr>
+<disqus [identifier]="post.id" [url]="route.url"></disqus>

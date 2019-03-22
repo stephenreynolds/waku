@@ -7,13 +7,13 @@
       </a>
       <div class="navbar-collapse collapse d-sm-inline-flex" [ngClass]='{"show": isExpanded}'>
         <ul class="navbar-nav flex-grow">
-          <li class="nav-item" [routerLinkActive]='["link-active"]'>
+          <li class="nav-item" [routerLinkActive]="['active']">
             <a class="nav-link text-light" [routerLink]='["/blog"]'>Blog</a>
           </li>
-          <li class="nav-item" [routerLinkActive]='["link-active"]'>
-            <a class="nav-link text-light" [routerLink]='["/blog"]'>Projects</a>
+          <li class="nav-item" [routerLinkActive]="['active']">
+            <a class="nav-link text-light" [routerLink]='["/projects"]'>Projects</a>
           </li>
-          <li class="nav-item" [routerLinkActive]='["link-active"]'>
+          <li class="nav-item" [routerLinkActive]="['active']">
             <a class="nav-link text-light" [routerLink]='["/resume"]'>Resume</a>
           </li>
         </ul>
@@ -31,11 +31,11 @@
         </form>
       </div>
       <div class="nav-item dropdown" *ngIf="!showDropdown">
-        <a class="nav-link text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+        <a class="nav-link text-light" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
           aria-expanded="false"><i class="fa fa-cog"></i></a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Settings</a>
-          <a class="dropdown-item" href="#">Theme</a>
+          <a class="dropdown-item" [routerLink]="">Settings</a>
+          <a class="dropdown-item" [routerLink]="">Theme</a>
           <div *ngIf="!user.loginRequired">
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" [routerLink]="" (click)="user.logout()">Logout <i class="fa fa-sign-out"

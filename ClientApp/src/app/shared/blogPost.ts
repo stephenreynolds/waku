@@ -1,6 +1,6 @@
 export class BlogPost {
 
-  public id: number;
+  public id: string;
   public title: string;
   public subtitle: string;
   public content: string;
