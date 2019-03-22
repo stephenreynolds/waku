@@ -36,10 +36,10 @@ import { NotFoundComponent } from './error/notfound/notfound.component';
     NgbModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'login', component: LoginComponent },
-      { path: 'blog', component: BlogComponent },
-      { path: 'blog/createpost', component: CreatePostComponent },
       { path: 'blog/post/:id', component: PostComponent },
+      { path: 'blog/createpost', component: CreatePostComponent },
+      { path: 'blog', component: BlogComponent },
+      { path: 'login', component: LoginComponent },
       { path: '**', component: NotFoundComponent }
     ])
   ],
