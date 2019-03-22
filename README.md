@@ -6,7 +6,7 @@ stephenreynolds.me (aka Waku) is my personal website implemented in ASP.NET Core
 It features a basic CMS capable of managing my resume, projects, and blog posts.
 
 I named my CMS "Waku" because it represents what my site is supposed to be and how I want users to feel when using my site.
-It is Japanese for "excited", "framework", and "to feel emotions form".
+It is Japanese for "excited" (沸く), "framework" (枠), and "to feel emotions form" (湧く).
 
 ## Building
 
