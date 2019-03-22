@@ -31,6 +31,7 @@ You can then use `dotnet run` from the root of the project to build and run the 
   - [x] Make posts viewable
   - [ ] WYSIWYG content (markdown)
   - [ ] Post editing and deletion
+  - [ ] Tagging
 - [ ] Projects
   - [ ] Project creation
   - [ ] GitHub integration
@@ -38,5 +39,8 @@ You can then use `dotnet run` from the root of the project to build and run the 
   - [ ] Ability to edit resume
 - [x] Commenting (likely using Disqus)
 - [ ] Search
+  - [ ] By tag
+  - [ ] By keyword
+  - [ ] By date
 - [ ] Social network integration
 - [ ] Theme support
