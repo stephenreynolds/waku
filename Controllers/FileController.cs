@@ -75,27 +75,34 @@ namespace Waku
                 {
                     string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
 
-                    // Change file name to MD5 hash.
-                    Stream readStream = file.OpenReadStream();
-                    MemoryStream memory = new MemoryStream();
-                    readStream.CopyTo(memory);
-
-                    using (MD5 md5 = MD5.Create())
+                    // If a file with the same name exists, increment the name.
+                    string name = Path.GetFileNameWithoutExtension(fileName);
+                    string ext = Path.GetExtension(fileName);
+                    int fileCount = -1;
+                    do
                     {
-                        var hash = string.Join("", md5.ComputeHash(memory.ToArray()).Select(x => x.ToString("X2")));
-                        fileName =  hash + Path.GetExtension(file.FileName);
-                    }
+                        fileCount++;
+                    } while (
+                        System.IO.File.Exists(Path.Combine(newPath, name + (fileCount > 0 ? " (" + fileCount.ToString() + ")" + ext : ext)))
+                        && !SameFiles(file, Path.Combine(newPath, name + (fileCount > 0 ? " (" + fileCount.ToString() + ")" + ext : ext))));
 
-                    string fullPath = Path.Combine(newPath, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
+                    fileName = name + (fileCount > 0 ? " (" + (fileCount + 1).ToString() + ")" + ext : ext);
 
                     var results = new
                     {
                         filename = fileName
                     };
+
+                    string fullPath = Path.Combine(newPath, fileName);
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        return Created("File already exists.", results);
+                    }
+
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
 
                     logger.LogInformation($"Uploaded file {fileName} successfully.");
                     return Created("Upload successful.", results);
@@ -131,6 +138,30 @@ namespace Waku
             memory.Position = 0;
 
             return File(memory, GetContentType(path), Path.GetFileName(path));
+        }
+
+        private bool SameFiles(IFormFile formFile, string existingFile)
+        {
+            var localFile = new FileInfo(existingFile);
+
+            Stream readStream = formFile.OpenReadStream();
+            MemoryStream formMemory = new MemoryStream();
+            readStream.CopyTo(formMemory);
+
+            readStream = localFile.OpenRead();
+            MemoryStream localMemory = new MemoryStream();
+            readStream.CopyTo(localMemory);
+
+            string formHash;
+            string localHash;
+
+            using (MD5 md5 = MD5.Create())
+            {
+                formHash = string.Join("", md5.ComputeHash(formMemory.ToArray()).Select(x => x.ToString("X2")));
+                localHash = string.Join("", md5.ComputeHash(localMemory.ToArray()).Select(x => x.ToString("X2")));
+            }
+
+            return formHash == localHash;
         }
 
         private string GetContentType(string path)
