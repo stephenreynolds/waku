@@ -1,0 +1,28 @@
+<div class="container clearfix mb-3 p-0" *ngIf="!userService.loginRequired">
+  <a class="btn bg-secondary text-light float-right" [routerLink]='["/blog/createpost"]'>
+    <i class="fa fa-plus"></i> New post
+  </a>
+</div>
+
+<div class="row">
+  <div class="blog-posts col-md-4" *ngFor="let p of posts">
+    <a class="mb-2 d-block" routerLink="">
+      <div class="card card-body bg-light p-0">
+      <div><img class="post-thumbnail mx-auto" *ngIf="p.thumbnail" src="Upload/{{p.thumbnail}}"></div>
+      <div class="bg-dark text-light p-1 rounded-bottom font-open-sans">
+        <div class="text-center"><strong>{{p.title}}</strong></div>
+        <div class="text-center">Published on {{p.publishDate + "Z" | date:"yyyy-MM-dd h:mm a"}}</div>
+      </div>
+    </div>
+    </a>
+  </div>
+</div>
+
+<div class="pagination mt-2">
+  <ngb-pagination [collectionSize]="totalItems"
+                  [(page)]="page"
+                  [maxSize]="itemsPerPage"
+                  [boundaryLinks]="true"
+                  (pageChange)="loadPage($event)">
+  </ngb-pagination>
+</div>

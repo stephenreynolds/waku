@@ -1,3 +1,8 @@
+branches:
+  only:
+    - master
+    - dev
+
 language: csharp
 sudo: required
 mono: none
@@ -8,6 +13,10 @@ script:
   - dotnet restore
   - dotnet build
   - dotnet test
+  - cd ClientApp
+  - npm install -g @angular/cli
+  - ng lint
+  - ng build --prod
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true

@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <form (submit)="onSubmit()" #createForm="ngForm">
+      <div *ngIf="errorMessage" class="alert alert-warning">{{errorMessage}}</div>
+      <div class="form-group row">
+        <div class="col-md-6">
+          <!-- Title input -->
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" name="title" placeholder="Title" [(ngModel)]="post.title" #title="ngModel" required>
+            <div class="text-danger" *ngIf="title.touched && title?.errors?.required">Title is required.</div>
+          </div>
+
+          <!-- Subtitle input -->
+          <div class="form-group">
+            <label for="subtitle">Subtitle</label>
+            <input type="text" class="form-control" name="subtitle" placeholder="Subtitle" [(ngModel)]="post.subtitle">
+          </div>
+
+          <!-- Thumbail image input -->
+          <div class="form-group">
+            <label for="thumbnail">Thumbnail</label>
+            <input #file type="file" accept="image/*" class="form-control-file" id="thumbnail" (change)="onFileChange(file.files)">
+            <span class="text-success" *ngIf="fileService.message">{{fileService.message}}</span>
+          </div>
+        </div>
+
+        <!-- Thumbnail preview -->
+        <div class="col-md-6">
+          <div class="card card-body bg-light p-0 d-block">
+            <div class="post-thumbnail d-block">
+              <img src="{{thumbnailPreview ? thumbnailPreview : '../../../assets/img/thumbnail-placeholder.png'}}">
+            </div>
+            <div class="bg-dark text-light p-1 rounded-bottom font-open-sans">
+              <div class="text-center"><strong>{{post.title ? post.title : "Title"}}</strong></div>
+              <div class="text-center">Published on {{getDate() | date:"yyyy-MM-dd h:mm a"}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content text area -->
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea class="form-control" name="content" rows="10" [(ngModel)]="post.content" #content="ngModel" required></textarea>
+        <div class="text-danger" *ngIf="content.touched && content?.errors?.required">Content is required.</div>
+      </div>
+
+      <!-- Submit button -->
+      <div class="form-group">
+        <input type="submit" class="btn btn-success" value="Submit" [disabled]="createForm.invalid">
+        <a routerLink="/blog" class="btn btn-default" (click)="onCancel()">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+  padding: 0;
+  font-family: 'Raleway', sans-serif;
+  cursor: pointer;
+
+  img.navbar-portrait {
+    max-height: 2.5rem;
+  }
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+.nav-link {
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#searchbar {
+  background-color: #24292e;
+  border: none;
+  color: #fff;
+  font-size: 10pt;
+
+  &:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+  }
+
+  &::placeholder {
+    color: #fff;
+  }
+}
+
+#search-button {
+  background-color: #24292e;
+  border: none;
+  color: #fff;
+
+  &:hover {
+    color: #cbd3da;
+    text-decoration: none;
+    cursor: pointer;
+  }
+}
