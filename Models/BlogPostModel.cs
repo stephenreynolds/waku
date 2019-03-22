@@ -6,7 +6,7 @@ namespace Waku.Models
 {
     public class BlogPostModel
     {
-        public int Id { get; }
+        public int Id { get; set; }
 
         [Required]
         public string Title { get; set; }

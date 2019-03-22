@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DisqusModule } from 'ngx-disqus';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -18,6 +19,7 @@ import { FileService } from './shared/file.service';
 import { PostComponent } from './blog/post/post.component';
 import { NotFoundComponent } from './error/notfound/notfound.component';
 
+// TODO: move blog, projects, etc. into there own modules.
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,9 +36,10 @@ import { NotFoundComponent } from './error/notfound/notfound.component';
     HttpClientModule,
     FormsModule,
     NgbModule,
+    DisqusModule.forRoot('stephenreynolds-1'),
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'blog/post/:id', component: PostComponent },
+      { path: 'blog/:id', component: PostComponent },
       { path: 'blog/createpost', component: CreatePostComponent },
       { path: 'blog', component: BlogComponent },
       { path: 'login', component: LoginComponent },

@@ -22,6 +22,10 @@ export class BlogService {
     );
   }
 
+  public getPost(id): Observable<BlogPost> {
+    return this.http.get<BlogPost>(`api/blog/${id}`);
+  }
+
   public loadPosts(model: { page: number; size: number }): Observable<boolean> {
     return this.http.post('api/blog/getpage', model).pipe(
       map((data: any[]) => {
